@@ -2,6 +2,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -10,6 +11,8 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 )
+
+var ctx = context.Background()
 
 var redisSocket string
 var redisPassword string
@@ -56,7 +59,7 @@ func rClient() *redis.Client {
 }
 
 func role(client *redis.Client) (interface{}, error) {
-	role, err := client.Do(nil, "role").Result()
+	role, err := client.Do(ctx, "role").Result()
 	return role, err
 }
 
