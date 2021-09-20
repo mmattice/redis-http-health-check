@@ -1,3 +1,4 @@
+
 package main
 
 import (
@@ -6,10 +7,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 )
 
+var redisSocket string
 var redisPassword string
 var redisHost string
 var redisPort int
@@ -22,6 +24,8 @@ func init() {
 		usageHost       = "Redis-server listening IP"
 		defaultPort     = 6379
 		usagePort       = "Redis-server listening port"
+		defaultSocket   = ""
+		usageSocket     = "Redis-server listening unix-socket"
 	)
 	flag.StringVar(&redisPassword, "password", defaultPassword, usagePassword)
 	flag.StringVar(&redisPassword, "P", defaultPassword, usagePassword+" (shorthand)")
@@ -29,21 +33,30 @@ func init() {
 	flag.StringVar(&redisHost, "h", defaultHost, usageHost+" (shorthand)")
 	flag.IntVar(&redisPort, "port", defaultPort, usagePort)
 	flag.IntVar(&redisPort, "p", defaultPort, usagePort+" (shorthand)")
+	flag.StringVar(&redisSocket, "socket", defaultSocket, usageSocket)
+	flag.StringVar(&redisSocket, "s", defaultSocket, usageSocket+" (shorthand)")
 }
 
 // var password = flag.String("password", "", "redis-server password")
 
 func rClient() *redis.Client {
-	client := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", redisHost, redisPort),
-		Password: redisPassword,
-	})
-
-	return client
+	if redisSocket != "" {
+		return redis.NewClient(&redis.Options{
+			Addr:     redisSocket,
+			Network: "unix",
+			Password: "",
+			DB: 1,
+		})
+	} else {
+		return redis.NewClient(&redis.Options{
+			Addr:     fmt.Sprintf("%s:%d", redisHost, redisPort),
+			Password: redisPassword,
+		})
+	}
 }
 
 func role(client *redis.Client) (interface{}, error) {
-	role, err := client.Do("role").Result()
+	role, err := client.Do(nil, "role").Result()
 	return role, err
 }
 

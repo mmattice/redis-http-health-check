@@ -5,6 +5,7 @@ go 1.14
 require (
 	4d63.com/gochecknoglobals v0.0.0-20190306162314-7c3491d2b6ec // indirect
 	github.com/go-redis/redis/v7 v7.2.0
+	github.com/go-redis/redis/v8 v8.11.3 // indirect
 	github.com/gorilla/mux v1.7.4
 	github.com/jgautheron/goconst v0.0.0-20200227150835-cda7ea3bf591 // indirect
 	github.com/kisielk/errcheck v1.2.0 // indirect
